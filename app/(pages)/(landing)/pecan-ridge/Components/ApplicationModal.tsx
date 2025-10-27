@@ -1,5 +1,6 @@
 "use client";
 
+import { submitApplication } from "@/app/(pages)/(landing)/pecan-ridge/actions/application-actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -81,10 +82,14 @@ export default function ApplicationModal({
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Submit application using server action
+      const result = await submitApplication(data);
 
-      console.log("Form submitted with data:", data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to submit application");
+      }
+
+      console.log("Form submitted successfully:", result.message);
 
       setIsSubmitting(false);
       setIsSubmitted(true);
@@ -98,6 +103,11 @@ export default function ApplicationModal({
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit application. Please try again."
+      );
     }
   };
 
@@ -114,7 +124,7 @@ export default function ApplicationModal({
             </h2>
             <p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-md">
               Thank you for applying to Pecan Ridge RV Park. We&apos;ll review
-              your application and get back to you within 24 hours.
+              your application and contact you as soon as possible.
             </p>
           </div>
         </DialogContent>
@@ -148,8 +158,8 @@ export default function ApplicationModal({
             </DialogTitle>
             <DialogDescription className="text-sm sm:text-base text-slate-600 leading-relaxed">
               Fill out the form below to start your application. All fields are
-              required. We&apos;ll review your application and contact you
-              within 24 hours.
+              required. We&apos;ll review your application and contact you as
+              soon as possible.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -632,7 +642,7 @@ export default function ApplicationModal({
                     <CheckCircle2 className="size-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                     <span>
                       <strong>Response Time:</strong> We&apos;ll review your
-                      application and respond within 24 hours.
+                      application and respond as soon as possible.
                     </span>
                   </li>
                 </ul>
